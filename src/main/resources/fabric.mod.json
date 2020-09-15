@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "cyber-permissions",
+  "version": "${version}",
+
+  "name": "CyberPermissions",
+  "description": "The Permissions API for Fabric",
+  "authors": [
+    "Isaiah"
+  ],
+  "contact": {
+    "homepage": "https://javazilla.com/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+
+  "license": "Unlicence",
+  "icon": "assets/modid/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "me.isaiah.mods.permissions.PermbricMod"
+    ]
+  },
+  "mixins": [
+    "cyberperms.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.7.4",
+    "fabric": "*"
+  }
+
+}
