@@ -10,7 +10,7 @@
   ],
   "contact": {
     "homepage": "https://javazilla.com/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "sources": "https://github.com/IsaiahMC/"
   },
 
   "license": "Unlicence",
@@ -19,7 +19,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "me.isaiah.mods.permissions.PermbricMod"
+      "me.isaiah.mods.permissions.CyberPermissionsMod"
     ]
   },
   "mixins": [

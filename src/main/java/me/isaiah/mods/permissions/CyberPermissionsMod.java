@@ -9,6 +9,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 
 import me.isaiah.mods.permissions.commands.PermsCommand;
 import net.fabricmc.api.ModInitializer;
@@ -17,7 +20,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class PermbricMod implements ModInitializer {
+public class CyberPermissionsMod implements ModInitializer {
 
     public static Logger LOGGER = LogManager.getLogger("CyberPermissions");
     public static File storage;
@@ -26,7 +29,7 @@ public class PermbricMod implements ModInitializer {
     public static HashMap<String, Config> users = new HashMap<>();
 
     public static GameProfile findGameProfile(ServerCommandSource cs, String name) {
-        if (name.length() > 30) // Name length max is 16, UUID minimum is 32 
+        if (name.length() >= 32) // Name length max is 16, UUID minimum is 32 
             return cs.getMinecraftServer().getUserCache().getByUuid(UUID.fromString(name));
         return cs.getMinecraftServer().getUserCache().findByName(name);
     }
@@ -105,9 +108,38 @@ public class PermbricMod implements ModInitializer {
         PermsCommand cmd = new PermsCommand();
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
             cmd.register(dispatcher, "perms");
-            cmd.register(dispatcher, "cyberperms");
+            /*String[] lables = {"perms", "cyberperms"};
+            for (String label : lables)
+                dispatcher.register(literal(label)
+                    .then( argument("group", StringArgumentType.string())
+                            .then( argument("name", StringArgumentType.word()).executes(new GroupSubcommand())
+                                    .then( argument("info", StringArgumentType.word()).executes(new GroupSubcommand()) )
+                                    .then( argument("permissions", StringArgumentType.word()).executes(new GroupSubcommand()) )
+                                    .then( argument("parentgroups", StringArgumentType.word()).executes(new GroupSubcommand()) ) )
+                            .executes(new GroupSubcommand()) )
+                    .then( argument("user",  StringArgumentType.word())
+                            .then( argument("name", StringArgumentType.word()).executes(new UserGroupSubcommand())
+                                .then( argument("group", StringArgumentType.word()).executes(new UserGroupSubcommand())
+                                        .then( argument("add", StringArgumentType.word()).executes(new UserGroupSubcommand())
+                                                .then( argument("group name", StringArgumentType.word()).executes(new UserGroupSubcommand()) ))
+                                        .then( argument("remove", StringArgumentType.word()).executes(new UserGroupSubcommand())
+                                                .then( argument("group name", StringArgumentType.word()).executes(new UserGroupSubcommand()) ))
+                                )
+                                .then( argument("info", StringArgumentType.word()).executes(new UserSubcommand()) )
+                                .then( argument("permissions", StringArgumentType.word()).executes(new UserSubcommand()) )
+                             )
+                            .executes(new UserSubcommand())  )
+                    .executes(cmd));*/
         });
         LOGGER.info("CyberPermissions fully loaded...");
+    }
+
+    public LiteralArgumentBuilder<ServerCommandSource> literal(String name) {
+        return LiteralArgumentBuilder.<ServerCommandSource>literal(name);
+    }
+
+    public static <T> RequiredArgumentBuilder<ServerCommandSource, T> argument(String name, ArgumentType<T> type) {
+        return RequiredArgumentBuilder.<ServerCommandSource, T>argument(name, type);
     }
 
 }

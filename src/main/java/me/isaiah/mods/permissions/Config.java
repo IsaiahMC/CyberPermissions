@@ -13,6 +13,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
  * TODO: Better Configuration
+ * 
+ * This is a horrible YAML parser.
  */
 public class Config {
 
@@ -88,7 +90,7 @@ public class Config {
     }
 
     public Config(ServerPlayerEntity plr) throws IOException {
-        this( new File(new File(PermbricMod.storage, "users"), plr.getUuid().toString() + ".yml") );
+        this( new File(new File(CyberPermissionsMod.storage, "users"), plr.getUuid().toString() + ".yml") );
 
         this.name = plr.getName().asString();
         this.uuid = plr.getUuid().toString();
@@ -99,7 +101,7 @@ public class Config {
     }
 
     public Config(String group) throws IOException {
-        this( new File(new File(PermbricMod.storage, "groups"), group + ".yml") );
+        this( new File(new File(CyberPermissionsMod.storage, "groups"), group + ".yml") );
 
         if (this.file.exists())
             return;
@@ -114,7 +116,7 @@ public class Config {
     }
 
     public Config(GameProfile profile) throws IOException {
-        this( new File(new File(PermbricMod.storage, "users"), profile.getId().toString() + ".yml") );
+        this( new File(new File(CyberPermissionsMod.storage, "users"), profile.getId().toString() + ".yml") );
 
         this.name = profile.getName();
         this.uuid = profile.getId().toString();
@@ -131,7 +133,7 @@ public class Config {
             return true;
 
         for (String s : parentGroups)
-            if (PermbricMod.groups.get(s).hasPermission(permission))
+            if (CyberPermissionsMod.groups.get(s).hasPermission(permission))
                 return true;
 
         return false;

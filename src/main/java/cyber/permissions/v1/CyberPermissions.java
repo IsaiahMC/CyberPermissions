@@ -21,8 +21,8 @@ public class CyberPermissions {
         return (Permissible) obj;
     }
 
-    public static Permissible getServerPermissible(MinecraftServer plr) {
-        return (Permissible) plr;
+    public static Permissible getServerPermissible(MinecraftServer server) {
+        return (Permissible) server;
     }
 
     public static Permissible getPlayerPermissible(ServerPlayerEntity plr) {

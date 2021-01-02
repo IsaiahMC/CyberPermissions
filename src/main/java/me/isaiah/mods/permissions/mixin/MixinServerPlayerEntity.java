@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import cyber.permissions.v1.Permissible;
 import cyber.permissions.v1.Permission;
 import me.isaiah.mods.permissions.Config;
-import me.isaiah.mods.permissions.PermbricMod;
+import me.isaiah.mods.permissions.CyberPermissionsMod;
 
 @Mixin(ServerPlayerEntity.class)
 public class MixinServerPlayerEntity implements Permissible {
@@ -17,7 +17,7 @@ public class MixinServerPlayerEntity implements Permissible {
     @Override
     public boolean hasPermission(Permission id) {
         if (null == cyberPermConfig)
-            cyberPermConfig = PermbricMod.getUser((ServerPlayerEntity)(Object)this);
+            cyberPermConfig = CyberPermissionsMod.getUser((ServerPlayerEntity)(Object)this);
         return cyberPermConfig.hasPermission(id.getPermissionAsString());
     }
 
