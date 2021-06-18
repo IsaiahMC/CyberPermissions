@@ -1,7 +1,7 @@
 import net.fabricmc.loom.task.RemapJarTask
 
 plugins {
-    id ("fabric-loom") version "0.5-SNAPSHOT"
+    id ("fabric-loom") version "0.7-SNAPSHOT"
     id ("maven-publish")
 }
 
@@ -12,7 +12,7 @@ java {
 
 base {
     archivesBaseName = "CyberPermissions"
-    version = "1.1"
+    version = "1.2"
     group = "com.javazilla.mods"
 }
 
@@ -27,7 +27,7 @@ tasks.getByName<ProcessResources>("processResources") {
     filesMatching("fabric.mod.json") {
         expand(
             mutableMapOf(
-                "version" to "1.1"
+                "version" to "1.2"
             )
         )
     }
