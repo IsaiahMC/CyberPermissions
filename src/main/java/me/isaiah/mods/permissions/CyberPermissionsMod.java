@@ -108,6 +108,7 @@ public class CyberPermissionsMod implements ModInitializer {
         PermsCommand cmd = new PermsCommand();
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
             cmd.register(dispatcher, "perms");
+            cmd.register(dispatcher, "cyberperms");
             /*String[] lables = {"perms", "cyberperms"};
             for (String label : lables)
                 dispatcher.register(literal(label)
