@@ -181,6 +181,7 @@ public class PermsCommand implements com.mojang.brigadier.Command<ServerCommandS
                         e.parentGroups.remove(argz[3]);
                         sendMessage(cs, null, "Group removed!");
                     }
+                    e.save();
                 }
                 if (argz[1].equalsIgnoreCase("info")) {
                     sendMessage(cs, Formatting.GREEN, "Info for user \"" + e.name + "\":");
@@ -250,6 +251,7 @@ public class PermsCommand implements com.mojang.brigadier.Command<ServerCommandS
                         e.parentGroups.remove(argz[3]);
                         sendMessage(cs, null, "Group removed!");
                     }
+                    e.save();
                 }
             }
 

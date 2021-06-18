@@ -76,7 +76,7 @@ public class Config {
 
     public void setPermission(Permission id, boolean value) {
         String str = id.getPermissionAsString();
-        setPermission(str, value);
+        this.setPermission(str, value);
     }
 
     public void setPermission(String str, boolean value) {
@@ -87,6 +87,7 @@ public class Config {
         } else {
             permissions.add(str);
         }
+        this.save();
     }
 
     public Config(ServerPlayerEntity plr) throws IOException {
@@ -137,6 +138,14 @@ public class Config {
                 return true;
 
         return false;
+    }
+    
+    public void save() {
+        try {
+            write();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void write() throws IOException {
