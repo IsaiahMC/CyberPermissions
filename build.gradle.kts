@@ -12,8 +12,12 @@ java {
 
 base {
     archivesBaseName = "CyberPermissions"
-    version = "1.2"
+    version = "1.3"
     group = "com.javazilla.mods"
+}
+
+repositories {
+    maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
 }
 
 dependencies {
@@ -21,13 +25,17 @@ dependencies {
     mappings ("net.fabricmc:yarn:1.16.4+build.7:v2")
     modImplementation ("net.fabricmc:fabric-loader:0.9.1+build.205")
     modImplementation ("net.fabricmc.fabric-api:fabric-api:0.20.2+build.402-1.16")
+
+    // LuckPerms API
+    modImplementation("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
+    include("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
 }
 
 tasks.getByName<ProcessResources>("processResources") {
     filesMatching("fabric.mod.json") {
         expand(
             mutableMapOf(
-                "version" to "1.2"
+                "version" to "1.3"
             )
         )
     }

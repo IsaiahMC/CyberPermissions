@@ -12,10 +12,17 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import cyber.permissions.v1.CyberPermissions;
+import cyber.permissions.v1.Permissible;
+import cyber.permissions.v1.Permission;
+import cyber.permissions.v1.PermissionDefaults;
 import me.isaiah.mods.permissions.commands.PermsCommand;
+import me.lucko.fabric.api.permissions.v0.PermissionCheckEvent;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.util.TriState;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -132,6 +139,23 @@ public class CyberPermissionsMod implements ModInitializer {
                             .executes(new UserSubcommand())  )
                     .executes(cmd));*/
         });
+
+        PermissionCheckEvent.EVENT.register((source, permission) -> {
+            if (source instanceof ServerCommandSource) {
+                ServerCommandSource ss = (ServerCommandSource) source;
+                try {
+                    ServerPlayerEntity plr = ss.getPlayer();
+                    Permissible p = CyberPermissions.getPlayerPermissible(plr);
+                    Permission perm = new Permission(permission, "LuckPerms API provided permission", PermissionDefaults.OPERATOR);
+                    p.hasPermission(perm);
+                } catch (Exception e) {
+                    // Not Player
+                }
+            }
+            
+            return TriState.DEFAULT;
+        });
+        
         LOGGER.info("CyberPermissions fully loaded...");
     }
 
