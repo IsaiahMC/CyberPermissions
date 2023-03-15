@@ -37,8 +37,8 @@ public class CyberPermissionsMod implements ModInitializer {
 
     public static GameProfile findGameProfile(ServerCommandSource cs, String name) {
         if (name.length() >= 32) // Name length max is 16, UUID minimum is 32 
-            return cs.getMinecraftServer().getUserCache().getByUuid(UUID.fromString(name));
-        return cs.getMinecraftServer().getUserCache().findByName(name);
+            return cs.getServer().getUserCache().getByUuid(UUID.fromString(name)).get();
+        return cs.getServer().getUserCache().findByName(name).get();
     }
 
     public static Config getUser(GameProfile profile) {

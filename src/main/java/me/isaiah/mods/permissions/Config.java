@@ -93,7 +93,7 @@ public class Config {
     public Config(ServerPlayerEntity plr) throws IOException {
         this( new File(new File(CyberPermissionsMod.storage, "users"), plr.getUuid().toString() + ".yml") );
 
-        this.name = plr.getName().asString();
+        this.name = plr.getName().getString();
         this.uuid = plr.getUuid().toString();
         this.isGroup = false;
         this.parentGroups.add("default");

@@ -21,8 +21,10 @@ import cyber.permissions.v1.CyberPermissions;
 import cyber.permissions.v1.Permissible;
 import me.isaiah.mods.permissions.Config;
 import me.isaiah.mods.permissions.CyberPermissionsMod;
+import me.isaiah.mods.permissions.Fabric18Text;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
+//import net.minecraft.text.LiteralTextContent;
+import net.minecraft.text.Text;
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 
@@ -51,7 +53,7 @@ public class PermsCommand implements com.mojang.brigadier.Command<ServerCommandS
         } else {
             if (cmds[1].equalsIgnoreCase("user")) {
                 if (spaces == 2) {
-                    for (String plr : context.getSource().getMinecraftServer().getPlayerManager().getPlayerNames())
+                    for (String plr : context.getSource().getServer().getPlayerManager().getPlayerNames())
                         results.add(plr);
                 } else if (spaces == 3){
                     results.add("info");
@@ -132,7 +134,7 @@ public class PermsCommand implements com.mojang.brigadier.Command<ServerCommandS
         try {
             Permissible permissible = CyberPermissions.getPermissible(cs);
             if (!permissible.isHighLevelOperator()) {
-                cs.sendFeedback(new LiteralText("This command requires operator permission.").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
+                cs.sendFeedback(colored_literal("This command requires operator permission.", Formatting.RED), false);
                 return 0;
             }
             String[] args = context.getInput().split(" ");
@@ -260,10 +262,21 @@ public class PermsCommand implements com.mojang.brigadier.Command<ServerCommandS
         }
         return 0;
     }
+	
+	public Text colored_literal(String txt, Formatting color) {
+		try {
+			return Text.of(txt).copy().formatted(color);
+		} catch (Exception | IncompatibleClassChangeError e) {
+			// Stupid Mojang changed color chat.
+			// Fallback for 1.18.2:
+			return Fabric18Text.colored_literal(txt, color);
+		}
+	}
 
     public void sendMessage(ServerCommandSource cs, Formatting color, String message) {
-        LiteralText txt = new LiteralText(message);
-        cs.sendFeedback(color != null ? txt.setStyle(Style.EMPTY.withColor(color)) : txt, false);
+        //LiteralTextContent txt = new LiteralTextContent(message);
+        //cs.sendFeedback(color != null ? txt.setStyle(Style.EMPTY.withColor(color)) : txt, false);
+        cs.sendFeedback(colored_literal(message, color), false);
     }
 
 }

@@ -11,7 +11,7 @@ public class CyberPermissions {
             if (obj instanceof ServerCommandSource) {
                 ServerCommandSource cs = (ServerCommandSource)obj;
                 if (null == cs.getEntity()) {
-                    return (Permissible) cs.getMinecraftServer();
+                    return (Permissible) cs.getServer();
                 } else {
                     return cs.getEntity() instanceof Permissible ? (Permissible) cs.getEntity() : null;
                 }

@@ -1,21 +1,18 @@
 {
   "schemaVersion": 1,
   "id": "cyber-permissions",
-  "version": "${version}",
-
+  "version": "1.4",
   "name": "CyberPermissions",
   "description": "The Permissions API for Fabric",
   "authors": [
     "Isaiah"
   ],
   "contact": {
-    "homepage": "https://javazilla.com/",
+    "homepage": "https://github.com/IsaiahMC/",
     "sources": "https://github.com/IsaiahMC/"
   },
-
   "license": "Unlicence",
-  "icon": "assets/modid/icon.png",
-
+  "icon": "assets/cyberperms/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -25,10 +22,13 @@
   "mixins": [
     "cyberperms.mixins.json"
   ],
-
   "depends": {
-    "fabricloader": ">=0.7.4",
+    "fabricloader": "*",
     "fabric": "*"
-  }
-
+  },
+  "jars": [
+    {
+      "file": "META-INF/jars/text-backwards-support-lib-0.1.jar"
+    }
+  ]
 }
