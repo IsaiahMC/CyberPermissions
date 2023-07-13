@@ -147,7 +147,10 @@ public class CyberPermissionsMod implements ModInitializer {
                     ServerPlayerEntity plr = ss.getPlayer();
                     Permissible p = CyberPermissions.getPlayerPermissible(plr);
                     Permission perm = new Permission(permission, "LuckPerms API provided permission", PermissionDefaults.OPERATOR);
-                    p.hasPermission(perm);
+                    boolean hass = p.hasPermission(perm);
+					if (hass) {
+						return TriState.TRUE;
+					}
                 } catch (Exception e) {
                     // Not Player
                 }

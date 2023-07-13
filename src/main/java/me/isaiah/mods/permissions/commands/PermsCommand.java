@@ -23,9 +23,7 @@ import me.isaiah.mods.permissions.Config;
 import me.isaiah.mods.permissions.CyberPermissionsMod;
 import me.isaiah.mods.permissions.Fabric18Text;
 import net.minecraft.server.command.ServerCommandSource;
-//import net.minecraft.text.LiteralTextContent;
 import net.minecraft.text.Text;
-import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 
 public class PermsCommand implements com.mojang.brigadier.Command<ServerCommandSource>, Predicate<ServerCommandSource>, SuggestionProvider<ServerCommandSource> {
@@ -134,7 +132,7 @@ public class PermsCommand implements com.mojang.brigadier.Command<ServerCommandS
         try {
             Permissible permissible = CyberPermissions.getPermissible(cs);
             if (!permissible.isHighLevelOperator()) {
-                cs.sendFeedback(colored_literal("This command requires operator permission.", Formatting.RED), false);
+            	sendMessage(cs, Formatting.RED, "This command requires operator permission.");
                 return 0;
             }
             String[] args = context.getInput().split(" ");
@@ -157,6 +155,7 @@ public class PermsCommand implements com.mojang.brigadier.Command<ServerCommandS
             }
 
             if (args[1].equalsIgnoreCase("listgroups")) {
+            	sendMessage(cs, Formatting.BLUE, "List of Groups:");
                 for (String group : CyberPermissionsMod.groups.keySet())
                     sendMessage(cs, null, group);
             }
@@ -265,8 +264,12 @@ public class PermsCommand implements com.mojang.brigadier.Command<ServerCommandS
 	
 	public Text colored_literal(String txt, Formatting color) {
 		try {
+			if (null == color) {
+				return Text.of(txt);
+			}
 			return Text.of(txt).copy().formatted(color);
 		} catch (Exception | IncompatibleClassChangeError e) {
+			// e.printStackTrace();
 			// Stupid Mojang changed color chat.
 			// Fallback for 1.18.2:
 			return Fabric18Text.colored_literal(txt, color);
@@ -274,9 +277,16 @@ public class PermsCommand implements com.mojang.brigadier.Command<ServerCommandS
 	}
 
     public void sendMessage(ServerCommandSource cs, Formatting color, String message) {
-        //LiteralTextContent txt = new LiteralTextContent(message);
-        //cs.sendFeedback(color != null ? txt.setStyle(Style.EMPTY.withColor(color)) : txt, false);
-        cs.sendFeedback(colored_literal(message, color), false);
+        try {
+	    	if (null == cs.getPlayer()) {
+	        	CyberPermissionsMod.LOGGER.info(message);
+	        } else {
+	        	cs.getPlayer().sendMessage(colored_literal(message, color), false);
+	        }
+        } catch (Exception e) {
+        	// 1.18.2
+        	CyberPermissionsMod.LOGGER.info(message);
+        }
     }
 
 }
