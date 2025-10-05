@@ -1,7 +1,7 @@
 import net.fabricmc.loom.task.RemapJarTask
 
 plugins {
-    id ("fabric-loom") version "1.1-SNAPSHOT"
+    id ("fabric-loom") version "1.11-SNAPSHOT"
     id ("maven-publish")
 }
 
@@ -12,7 +12,7 @@ java {
 
 base {
     archivesBaseName = "CyberPermissions"
-    version = "1.5"
+    version = "1.5.4"
     group = "com.javazilla.mods"
 }
 
@@ -41,25 +41,65 @@ dependencies {
     //modImplementation ("net.fabricmc.fabric-api:fabric-api:0.75.3+1.19.4")
 	//modImplementation ("net.fabricmc.fabric-api:fabric-api-deprecated:0.75.3+1.19.4")	
 
+	/*
 	minecraft ("com.mojang:minecraft:1.20.1")
 	mappings ("net.fabricmc:yarn:1.20.1+build.9")
-	modImplementation ("net.fabricmc:fabric-loader:0.14.21")
-    modImplementation ("net.fabricmc.fabric-api:fabric-api:0.85.0+1.20.1")
-	modImplementation ("net.fabricmc.fabric-api:fabric-api-deprecated:0.85.0+1.20.1")
+	modImplementation ("net.fabricmc:fabric-loader:0.17.2")
+    modImplementation ("net.fabricmc.fabric-api:fabric-api:0.92.6+1.20.1")
+	*/
+	
+	/*
+	minecraft ("com.mojang:minecraft:1.21.1")
+	mappings ("net.fabricmc:yarn:1.21.1+build.3")
+	modImplementation ("net.fabricmc:fabric-loader:0.17.2")
+    modImplementation ("net.fabricmc.fabric-api:fabric-api:0.116.6+1.21.1")
+	*/
+	
+	/*
+	minecraft ("com.mojang:minecraft:1.21.8")
+	mappings ("net.fabricmc:yarn:1.21.8+build.1")
+	modImplementation ("net.fabricmc:fabric-loader:0.17.2")
+    modImplementation ("net.fabricmc.fabric-api:fabric-api:0.134.0+1.21.8")	
+	*/
+	
+	minecraft ("com.mojang:minecraft:1.21.9")
+	mappings ("net.fabricmc:yarn:1.21.9+build.1")
+	modImplementation ("net.fabricmc:fabric-loader:0.17.2")
+    modImplementation ("net.fabricmc.fabric-api:fabric-api:0.134.0+1.21.9")
 	
 	// modImplementation(fileTree("dir" to "libs", "include" to "text-backwards-support-lib-0.1.jar"))
 	// include(fileTree("dir" to "libs", "include" to "text-backwards-support-lib-0.1.jar"))
 
     // LuckPerms API
-    modImplementation("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
-    include("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
+    // modImplementation("me.lucko:fabric-permissions-api:0.3.3")
+    // include("me.lucko:fabric-permissions-api:0.3.3")
+	
+	// modImplementation("me.lucko:fabric-permissions-api:0.5.0")
+    // include("me.lucko:fabric-permissions-api:0.5.0")
+	
+	// modImplementation("me.lucko:fabric-permissions-api:0.4.1")
+    // include("me.lucko:fabric-permissions-api:0.4.1")
+	
+	modImplementation("me.lucko:fabric-permissions-api:0.5.0")
+    // include("me.lucko:fabric-permissions-api:0.5.0")
+	
+	/*
+	modImplementation(fileTree("dir" to "libs", "include" to "fabric-permissions-api-0.3.3.jar"))
+	include(fileTree("dir" to "libs", "include" to "fabric-permissions-api-0.3.3.jar"))
+	
+	modImplementation(fileTree("dir" to "libs", "include" to "fabric-permissions-api-0.4.1.jar"))
+	include(fileTree("dir" to "libs", "include" to "fabric-permissions-api-0.4.1.jar"))
+	
+	modImplementation(fileTree("dir" to "libs", "include" to "fabric-permissions-api-0.5.0.jar"))
+	include(fileTree("dir" to "libs", "include" to "fabric-permissions-api-0.5.0.jar"))
+	*/
 }
 
 tasks.getByName<ProcessResources>("processResources") {
     filesMatching("fabric.mod.json") {
         expand(
             mutableMapOf(
-                "version" to "1.4"
+                "version" to "1.5.4"
             )
         )
     }

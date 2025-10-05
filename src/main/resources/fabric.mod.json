@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "cyber-permissions",
-  "version": "1.5",
+  "version": "1.5.4",
   "name": "CyberPermissions",
   "description": "The Permissions API for Fabric",
   "authors": [
@@ -23,12 +23,18 @@
     "cyberperms.mixins.json"
   ],
   "depends": {
-    "fabricloader": "*",
+    "fabricloader": ">=0.14.0",
     "fabric": "*"
   },
   "jars": [
     {
-      "file": "META-INF/jars/text-backwards-support-lib-0.1.jar"
+      "file": "META-INF/jars/fabric-permissions-api-0.3.3.jar"
+    },
+	{
+      "file": "META-INF/jars/fabric-permissions-api-0.4.1.jar"
+    },
+	{
+      "file": "META-INF/jars/fabric-permissions-api-0.5.0.jar"
     }
   ]
 }

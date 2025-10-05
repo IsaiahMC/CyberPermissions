@@ -8,11 +8,10 @@ import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.pisaiah.mcauth.ProfileLookup;
 
 import cyber.permissions.v1.CyberPermissions;
 import cyber.permissions.v1.Permissible;
@@ -21,9 +20,11 @@ import cyber.permissions.v1.PermissionDefaults;
 import me.isaiah.mods.permissions.commands.PermsCommand;
 import me.lucko.fabric.api.permissions.v0.PermissionCheckEvent;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.util.TriState;
 import net.fabricmc.loader.api.FabricLoader;
+
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -35,19 +36,74 @@ public class CyberPermissionsMod implements ModInitializer {
     public static HashMap<String, Config> groups = new HashMap<>();
     public static HashMap<String, Config> users = new HashMap<>();
 
+   
+    /*
+    public static GameProfile findGameProfile(ServerCommandSource cs, String name) {
+        if (name.length() >= 32) { // Name length max is 16, UUID minimum is 32 
+        	return ProfileComponent.ofDynamic(UUID.fromString(name)).getGameProfile();
+        }
+        
+        return ProfileComponent.ofDynamic(name).getGameProfile(); // .id();
+    }
+
+    
+    /*
     public static GameProfile findGameProfile(ServerCommandSource cs, String name) {
         if (name.length() >= 32) // Name length max is 16, UUID minimum is 32 
             return cs.getServer().getUserCache().getByUuid(UUID.fromString(name)).get();
         return cs.getServer().getUserCache().findByName(name).get();
     }
+    */
 
+    /**
     public static Config getUser(GameProfile profile) {
-        String uuid = profile.getId().toString();
+        String uuid = profile.id().toString();
         if (users.containsKey(uuid))
             return users.get(uuid);
 
         try {
             Config conf = new Config(profile);
+            users.put(conf.uuid, conf);
+            return conf;
+        } catch (IOException ex) {
+            LOGGER.error("Unable to load configuration for a user!");
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    */
+    
+    public static Config getUserFromNameOrUuid(MinecraftServer server, String key) {
+    	if (key.length() >= 32) {
+    		// Key is UUID
+    		String id = key;
+    		String name = ProfileLookup.getNameForUUID(key);
+    		
+    		if (id.indexOf('-') == -1) {
+    			// UUID without dashes
+    			id = id.replaceFirst( 
+    				        "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5" 
+    				    );
+    		}
+    		
+    		UUID uuid = UUID.fromString(id);
+    		return getUser(server, name, uuid);
+    	}
+    	
+    	// Key is Name
+    	String id = ProfileLookup.getUUIDFromName(server, key);
+    	UUID uuid = UUID.fromString(id);
+    	return getUser(server, key, uuid);
+    }
+    
+    public static Config getUser(MinecraftServer server, String name, UUID uuid0) {
+    	String uuid = uuid0.toString();
+        if (users.containsKey(uuid)) {
+            return users.get(uuid);
+        }
+
+        try {
+            Config conf = new Config(name, uuid0);
             users.put(conf.uuid, conf);
             return conf;
         } catch (IOException ex) {
@@ -63,7 +119,8 @@ public class CyberPermissionsMod implements ModInitializer {
             return users.get(uuid);
 
         try {
-            Config conf = new Config(e);
+        	String name = e.getName().getString();
+            Config conf = new Config(name, e.getUuid());
             users.put(conf.uuid, conf);
             return conf;
         } catch (IOException ex) {
@@ -113,7 +170,7 @@ public class CyberPermissionsMod implements ModInitializer {
         }
 
         PermsCommand cmd = new PermsCommand();
-        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, arg2) -> {
             cmd.register(dispatcher, "perms");
             cmd.register(dispatcher, "cyberperms");
             /*String[] lables = {"perms", "cyberperms"};

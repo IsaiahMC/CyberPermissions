@@ -9,16 +9,31 @@ import net.minecraft.server.MinecraftServer;
 @Mixin(MinecraftServer.class)
 public class MixinMinecraftServer implements Permissible {
 
+	/**
+	 * Console has all permissions
+	 * 
+	 * @return true
+	 */
     @Override
     public boolean hasPermission(Permission id) {
         return true; // Console has all permissions
     }
 
+	/**
+	 * Console has all permissions
+	 * 
+	 * @return true
+	 */
     @Override
     public boolean isHighLevelOperator() {
         return true;
     }
 
+	/**
+	 * Can't set permissions for MinecraftServer.
+	 * 
+	 * @return true
+	 */
     @Override
     public void setPermission(Permission id, boolean value) {
         // Can not set permissions for the dedicated server

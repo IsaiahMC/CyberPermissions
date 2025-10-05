@@ -8,6 +8,7 @@ import cyber.permissions.v1.Permissible;
 import cyber.permissions.v1.Permission;
 import me.isaiah.mods.permissions.Config;
 import me.isaiah.mods.permissions.CyberPermissionsMod;
+import me.isaiah.mods.permissions.Utils;
 
 @Mixin(ServerPlayerEntity.class)
 public class MixinServerPlayerEntity implements Permissible {
@@ -16,15 +17,17 @@ public class MixinServerPlayerEntity implements Permissible {
 
     @Override
     public boolean hasPermission(Permission id) {
-        if (null == cyberPermConfig)
+        if (null == cyberPermConfig) {
             cyberPermConfig = CyberPermissionsMod.getUser((ServerPlayerEntity)(Object)this);
+        }
+
         return cyberPermConfig.hasPermission(id.getPermissionAsString());
     }
 
     @Override
     public boolean isHighLevelOperator() {
         ServerPlayerEntity e = (ServerPlayerEntity)(Object)this;
-        return e.getServer().getPermissionLevel(e.getGameProfile()) >= 1;
+        return Utils.isOp(e);
     }
 
     @Override

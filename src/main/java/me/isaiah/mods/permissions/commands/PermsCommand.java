@@ -21,7 +21,6 @@ import cyber.permissions.v1.CyberPermissions;
 import cyber.permissions.v1.Permissible;
 import me.isaiah.mods.permissions.Config;
 import me.isaiah.mods.permissions.CyberPermissionsMod;
-import me.isaiah.mods.permissions.Fabric18Text;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -136,7 +135,9 @@ public class PermsCommand implements com.mojang.brigadier.Command<ServerCommandS
                 return 0;
             }
             String[] args = context.getInput().split(" ");
+
             if (args.length <= 1) {
+            	sendMessage(cs, null, "CyberPerms/SimplePerms Mod.");
                 sendMessage(cs, null, "Invalid arguments!");
                 return 0;
             }
@@ -161,99 +162,11 @@ public class PermsCommand implements com.mojang.brigadier.Command<ServerCommandS
             }
 
             if (args[1].equalsIgnoreCase("user")) {
-                String[] argz0 = context.getInput().split(args[0] + " " + args[1] + " ");
-                if (argz0.length <= 1) {
-                    sendMessage(cs, null, "Invalid arguments!");
-                    return 0;
-                }
-                String[] argz = argz0[1].split(" ");
-                Config e = CyberPermissionsMod.getUser(CyberPermissionsMod.findGameProfile(cs, argz[0]));
-                if (argz.length <= 0) {
-                    sendMessage(cs, null, "Usage: /perms user <user> <info|permissions|group|has>");
-                    return 0;
-                }
-
-                if (argz[1].equalsIgnoreCase("group")) {
-                    if (argz[2].equalsIgnoreCase("add")) {
-                        e.parentGroups.add(argz[3]);
-                        sendMessage(cs, null, "Group added!");
-                    }
-                    if (argz[2].equalsIgnoreCase("remove")) {
-                        e.parentGroups.remove(argz[3]);
-                        sendMessage(cs, null, "Group removed!");
-                    }
-                    e.save();
-                }
-                if (argz[1].equalsIgnoreCase("info")) {
-                    sendMessage(cs, Formatting.GREEN, "Info for user \"" + e.name + "\":");
-                    sendMessage(cs, Formatting.GREEN, "UUID: " + e.uuid);
-                    sendMessage(cs, Formatting.DARK_GREEN, "parentGroups:");
-                    for (String s : e.parentGroups)
-                        sendMessage(cs, Formatting.GREEN, "- " + s);
-
-                    sendMessage(cs, Formatting.DARK_GREEN, "User permissions:");
-                    for (String s : e.permissions)
-                        sendMessage(cs, Formatting.GREEN, "- " + s);
-                    for (String s : e.negPermissions)
-                        sendMessage(cs, Formatting.GREEN, "- -" + s);
-                    return 0;
-                }
-                if (argz[1].equalsIgnoreCase("permissions")) {
-                    if (argz[2].equalsIgnoreCase("set")) {
-                        String perm = argz[3];
-                        String value = argz[4];
-                        e.setPermission(perm, Boolean.valueOf(value));
-                        sendMessage(cs, null, "Permission \"" + perm + "\" set to " + value + " for user " + argz[0]);
-                    }
-                }
+            	return UserCommand.run(context, cs, args);
             }
 
             if (args[1].equalsIgnoreCase("group")) {
-                String[] argz0 = context.getInput().split(args[0] + " " + args[1] + " ");
-                if (argz0.length <= 1) {
-                    sendMessage(cs, null, "Invalid arguments!");
-                    return 0;
-                }
-                String[] argz = argz0[1].split(" ");
-                Config e = CyberPermissionsMod.groups.get(argz[0]);
-                if (argz.length <= 0) {
-                    sendMessage(cs, null, "Usage: /perms group <group> <info|permissions|parentgroups>");
-                    return 0;
-                }
-                if (argz[1].equalsIgnoreCase("info")) {
-                    sendMessage(cs, Formatting.GREEN, "Info for group \"" + e.name + "\":");
-                    sendMessage(cs, Formatting.GREEN, "Name: " + e.name);
-                    sendMessage(cs, Formatting.DARK_GREEN, "parentGroups:");
-                    for (String s : e.parentGroups)
-                        sendMessage(cs, Formatting.GREEN, "- " + s);
-
-                    sendMessage(cs, Formatting.DARK_GREEN, "Group permissions:");
-                    for (String s : e.permissions)
-                        sendMessage(cs, Formatting.GREEN, "- " + s);
-                    for (String s : e.negPermissions)
-                        sendMessage(cs, Formatting.GREEN, "- -" + s);
-                    return 0;
-                }
-                if (argz[1].equalsIgnoreCase("permissions")) {
-                    if (argz[2].equalsIgnoreCase("set")) {
-                        String perm = argz[3];
-                        String value = argz[4];
-                        e.setPermission(perm, Boolean.valueOf(value));
-                        sendMessage(cs, null, "Permission \"" + perm + "\" set to " + value + " for group " + argz[0]);
-                    }
-                }
-
-                if (argz[1].equalsIgnoreCase("parentgroups")) {
-                    if (argz[2].equalsIgnoreCase("add")) {
-                        e.parentGroups.add(argz[3]);
-                        sendMessage(cs, null, "Group added!");
-                    }
-                    if (argz[2].equalsIgnoreCase("remove")) {
-                        e.parentGroups.remove(argz[3]);
-                        sendMessage(cs, null, "Group removed!");
-                    }
-                    e.save();
-                }
+                return GroupCommand.run(context, cs, args);
             }
 
         } catch (Exception e) {
@@ -269,10 +182,7 @@ public class PermsCommand implements com.mojang.brigadier.Command<ServerCommandS
 			}
 			return Text.of(txt).copy().formatted(color);
 		} catch (Exception | IncompatibleClassChangeError e) {
-			// e.printStackTrace();
-			// Stupid Mojang changed color chat.
-			// Fallback for 1.18.2:
-			return Fabric18Text.colored_literal(txt, color);
+			return Text.of(txt);
 		}
 	}
 

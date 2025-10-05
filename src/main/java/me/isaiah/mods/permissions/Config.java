@@ -5,11 +5,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.mojang.authlib.GameProfile;
+import java.util.UUID;
 
 import cyber.permissions.v1.Permission;
-import net.minecraft.server.network.ServerPlayerEntity;
+//import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
  * TODO: Better Configuration
@@ -90,6 +89,7 @@ public class Config {
         this.save();
     }
 
+    /*
     public Config(ServerPlayerEntity plr) throws IOException {
         this( new File(new File(CyberPermissionsMod.storage, "users"), plr.getUuid().toString() + ".yml") );
 
@@ -100,6 +100,7 @@ public class Config {
         this.permissions.add("example.permission");
         this.write();
     }
+    */
 
     public Config(String group) throws IOException {
         this( new File(new File(CyberPermissionsMod.storage, "groups"), group + ".yml") );
@@ -116,11 +117,25 @@ public class Config {
         this.write();
     }
 
+    /*
+    @Deprecated
     public Config(GameProfile profile) throws IOException {
-        this( new File(new File(CyberPermissionsMod.storage, "users"), profile.getId().toString() + ".yml") );
+        this( new File(new File(CyberPermissionsMod.storage, "users"), profile.id().toString() + ".yml") );
 
-        this.name = profile.getName();
-        this.uuid = profile.getId().toString();
+        this.name = profile.name();
+        this.uuid = profile.id().toString();
+        this.isGroup = false;
+        this.parentGroups.add("default");
+        this.permissions.add("example.permission");
+        this.write();
+    }
+    */
+    
+    public Config(String name, UUID uuid) throws IOException {
+        this( new File(new File(CyberPermissionsMod.storage, "users"), uuid.toString() + ".yml") );
+        
+        this.name = name;
+        this.uuid = uuid.toString();
         this.isGroup = false;
         this.parentGroups.add("default");
         this.permissions.add("example.permission");
@@ -128,10 +143,12 @@ public class Config {
     }
 
     public boolean hasPermission(String permission) {
-        if (negPermissions.contains(permission))
+        if (negPermissions.contains(permission)) {
             return false;
-        if (permissions.contains(permission))
+        }
+        if (permissions.contains(permission)) {
             return true;
+        }
 
         for (String s : parentGroups)
             if (CyberPermissionsMod.groups.get(s).hasPermission(permission))
@@ -150,14 +167,17 @@ public class Config {
 
     public void write() throws IOException {
         String groups = "parentGroups: ";
-        for (String s : parentGroups)
+        for (String s : parentGroups) {
             groups += s + ", ";
+        }
 
         String text = (null != uuid ? ("uuid: " + uuid + "\n") : "") + "name: " + name + "\nisGroup: " + isGroup + (parentGroups.size() > 0 ? ("\n" + groups) : "") + "\npermissions:\n";
-        for (String s : negPermissions)
-            text += "- -" + s;
-        for (String s : permissions)
-            text += "- " + s;
+        for (String s : negPermissions) {
+            text += "- -" + s + "\n";
+        }
+        for (String s : permissions) {
+            text += "- " + s + "\n";
+        }
 
         Files.write(file.toPath(), text.getBytes());
     }
