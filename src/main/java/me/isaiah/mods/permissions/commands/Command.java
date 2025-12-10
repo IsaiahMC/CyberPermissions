@@ -1,8 +1,10 @@
 package me.isaiah.mods.permissions.commands;
 
 import me.isaiah.mods.permissions.CyberPermissionsMod;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
 public class Command {
 
@@ -39,6 +41,42 @@ public class Command {
             }
         }
         return new String(b);
+    }
+    
+    public static boolean checkPerm(ServerCommandSource cs, String permission) {
+    	return checkPerm(cs, permission, true);
+    }
+    
+    public static boolean checkPerm(ServerCommandSource cs, boolean print, String... perms) {
+    	boolean has = Permissions.check(cs, "permissions.admin", 4);
+    	for (String permission : perms ) {
+    		if (checkPerm(cs, permission, false)) {
+    			has = true;
+    			break;
+    		}
+    	}
+    	if (!has) {
+			if (print) {
+				message(cs, "&4This command requires one of the following permissions: " + String.join(", ", perms) + ", permissions.admin");
+			}
+		}
+    	return has;
+    }
+    
+    public static boolean checkPerm(ServerCommandSource cs, String... perms) {
+    	return checkPerm(cs, true, perms);
+    }
+
+    public static boolean checkPerm(ServerCommandSource cs, String permission, boolean print) {
+    	boolean hasPerm = Permissions.check(cs, permission, 4) || Permissions.check(cs, "permissions.admin", 4);
+    	
+    	if (!hasPerm) {
+    		if (print) {
+    			message(cs, "&4This command requires permission: " + permission);
+    		}
+    		return false;
+    	}
+    	return hasPerm;
     }
 
 }

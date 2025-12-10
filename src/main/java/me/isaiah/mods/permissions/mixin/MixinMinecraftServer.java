@@ -25,7 +25,7 @@ public class MixinMinecraftServer implements Permissible {
 	 * @return true
 	 */
     @Override
-    public boolean isHighLevelOperator() {
+    public boolean perms$isHighLevelOperator() {
         return true;
     }
 
@@ -38,5 +38,10 @@ public class MixinMinecraftServer implements Permissible {
     public void setPermission(Permission id, boolean value) {
         // Can not set permissions for the dedicated server
     }
+
+	@Override
+	public boolean hasPermission(Permission id, boolean checkLucko) {
+		return true;
+	}
 
 }

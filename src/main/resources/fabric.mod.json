@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "id": "cyber-permissions",
-  "version": "1.5.4",
-  "name": "CyberPermissions",
+  "version": "1.6",
+  "name": "Simple Permissions",
   "description": "The Permissions API for Fabric",
   "authors": [
     "Isaiah"
@@ -23,7 +23,7 @@
     "cyberperms.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.14.0",
+    "fabricloader": ">=0.15.0",
     "fabric": "*"
   },
   "jars": [
@@ -35,6 +35,9 @@
     },
 	{
       "file": "META-INF/jars/fabric-permissions-api-0.5.0.jar"
+    },
+    {
+      "file": "META-INF/jars/fabric-permissions-api-0.6.1.jar"
     }
   ]
 }

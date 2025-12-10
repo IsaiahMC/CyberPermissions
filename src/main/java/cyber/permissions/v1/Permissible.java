@@ -33,12 +33,31 @@ public interface Permissible {
      * the permission, false otherwise.
      */
     public boolean hasPermission(Permission id);
+    
+    /**
+     * Returns true if this Permissible has
+     * the permission, false otherwise.
+     * 
+     * @param checkLucko - Also check 'fabric-permissions-api'
+     * @since 1.5.5
+     */
+    public boolean hasPermission(Permission id, boolean checkLucko);
 
     /**
      * Returns true if this Permissible is an
      * server operator, false otherwise.
+     * 
+     * @deprecated Use the prefixed: {@link #perms$isHighLevelOperator()}
      */
-    public boolean isHighLevelOperator();
+    public default boolean isHighLevelOperator() {
+    	return perms$isHighLevelOperator();
+    }
+    
+    /**
+     * Returns true if this Permissible is an
+     * server operator, false otherwise.
+     */
+    public boolean perms$isHighLevelOperator();
 
     /**
      */

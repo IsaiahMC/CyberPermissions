@@ -12,7 +12,7 @@ java {
 
 base {
     archivesBaseName = "CyberPermissions"
-    version = "1.5.4"
+    version = "1.6"
     group = "com.javazilla.mods"
 }
 

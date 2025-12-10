@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,6 +19,7 @@ import cyber.permissions.v1.Permissible;
 import cyber.permissions.v1.Permission;
 import cyber.permissions.v1.PermissionDefaults;
 import me.isaiah.mods.permissions.commands.PermsCommand;
+import me.lucko.fabric.api.permissions.v0.OfflinePermissionCheckEvent;
 import me.lucko.fabric.api.permissions.v0.PermissionCheckEvent;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -30,7 +32,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 public class CyberPermissionsMod implements ModInitializer {
 
-    public static Logger LOGGER = LogManager.getLogger("CyberPermissions");
+    public static Logger LOGGER = LogManager.getLogger("PermissionsMod");
     public static File storage;
 
     public static HashMap<String, Config> groups = new HashMap<>();
@@ -77,7 +79,6 @@ public class CyberPermissionsMod implements ModInitializer {
     	if (key.length() >= 32) {
     		// Key is UUID
     		String id = key;
-    		String name = ProfileLookup.getNameForUUID(key);
     		
     		if (id.indexOf('-') == -1) {
     			// UUID without dashes
@@ -85,6 +86,17 @@ public class CyberPermissionsMod implements ModInitializer {
     				        "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5" 
     				    );
     		}
+    		
+            if (users.containsKey(id)) {
+            	Config found = users.get(id);
+            	if (null == found.name) {
+            		String name = ProfileLookup.getNameForUUID(key);
+            		found.name = name;
+            	}
+            	return found;
+            }
+            
+            String name = ProfileLookup.getNameForUUID(key);
     		
     		UUID uuid = UUID.fromString(id);
     		return getUser(server, name, uuid);
@@ -94,6 +106,59 @@ public class CyberPermissionsMod implements ModInitializer {
     	String id = ProfileLookup.getUUIDFromName(server, key);
     	UUID uuid = UUID.fromString(id);
     	return getUser(server, key, uuid);
+    }
+
+    public static Config getUser(MinecraftServer server, UUID uuid) {
+    	// Key is UUID
+    	String key = uuid.toString();
+    	String id = key;
+    	String name = ProfileLookup.getNameForUUID(key);
+    		
+    	if (id.indexOf('-') == -1) {
+    		// UUID without dashes
+    		id = id.replaceFirst( 
+    			        "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5" 
+    			    );
+    	}
+    		
+    	// UUID uuid = UUID.fromString(id);
+    	return getUser(server, name, uuid);
+
+    }
+    
+    public static Config getOfflineUser(UUID uuid) {
+    	// Key is UUID
+    	String key = uuid.toString();
+    	String id = key;
+    	// String name = ProfileLookup.getNameForUUID(key);
+    		
+    	if (id.indexOf('-') == -1) {
+    		// UUID without dashes
+    		id = id.replaceFirst( 
+    			        "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5" 
+    			    );
+    	}
+    		
+    	// UUID uuid = UUID.fromString(id);
+    	return getOfflineUser(null, uuid);
+
+    }
+    
+    public static Config getOfflineUser(MinecraftServer server, UUID uuid0) {
+    	String uuid = uuid0.toString();
+        if (users.containsKey(uuid)) {
+            return users.get(uuid);
+        }
+
+        try {
+            Config conf = new Config(uuid0);
+            users.put(conf.uuid, conf);
+            return conf;
+        } catch (IOException ex) {
+            LOGGER.error("Unable to load configuration for a user!");
+            ex.printStackTrace();
+            return null;
+        }
     }
     
     public static Config getUser(MinecraftServer server, String name, UUID uuid0) {
@@ -132,9 +197,13 @@ public class CyberPermissionsMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("Loading CyberPermissions...");
+        LOGGER.info("Loading SimplePerms / CyberPermissions...");
         storage = new File(FabricLoader.getInstance().getConfigDir().toFile(), "permissions");
         storage.mkdirs();
+
+        // Loading Config
+        ModConfig config = new ModConfig();
+        config.init(storage);
 
         File groupsDir = new File(storage, "groups");
         groupsDir.mkdir();
@@ -197,26 +266,50 @@ public class CyberPermissionsMod implements ModInitializer {
                     .executes(cmd));*/
         });
 
+        
+        LOGGER.info("Registering PermissionCheckEvent..");
         PermissionCheckEvent.EVENT.register((source, permission) -> {
             if (source instanceof ServerCommandSource) {
                 ServerCommandSource ss = (ServerCommandSource) source;
                 try {
                     ServerPlayerEntity plr = ss.getPlayer();
-                    Permissible p = CyberPermissions.getPlayerPermissible(plr);
-                    Permission perm = new Permission(permission, "LuckPerms API provided permission", PermissionDefaults.OPERATOR);
-                    boolean hass = p.hasPermission(perm);
-					if (hass) {
-						return TriState.TRUE;
-					}
+                    if (null != plr) {
+	                    Permissible p = CyberPermissions.getPlayerPermissible(plr);
+	                    Permission perm = new Permission(permission, "LuckPerms API provided permission", PermissionDefaults.OPERATOR);
+	                    boolean hass = p.hasPermission(perm, false) || p.perms$isHighLevelOperator();
+						if (hass) {
+							return TriState.TRUE;
+						}
+                    }
                 } catch (Exception e) {
                     // Not Player
+                	// e.printStackTrace();
                 }
             }
-            
+
             return TriState.DEFAULT;
         });
         
-        LOGGER.info("CyberPermissions fully loaded...");
+        LOGGER.info("Registering OfflinePermissionCheckEvent..");
+        OfflinePermissionCheckEvent.EVENT.register((uuid, permission) -> {
+            return CompletableFuture.supplyAsync(() -> {
+
+                Config c = CyberPermissionsMod.getOfflineUser(uuid);
+                boolean has = c.hasPermission(permission, false);
+
+                if (has) {
+                	return TriState.TRUE;
+                }
+                
+                if (c.hasNegativePermission(permission)) {
+                	return TriState.FALSE;
+                }
+                
+                return TriState.DEFAULT;
+            });
+        });
+        
+        LOGGER.info("Permissions fully loaded...");
     }
 
     public LiteralArgumentBuilder<ServerCommandSource> literal(String name) {
